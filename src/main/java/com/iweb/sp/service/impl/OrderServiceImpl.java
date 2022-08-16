@@ -3,16 +3,12 @@ package com.iweb.sp.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.iweb.sp.dao.OrderFormDao;
 import com.iweb.sp.dao.OrderItemDao;
-import com.iweb.sp.dao.UserInfoDao;
 import com.iweb.sp.pojo.OrderForm;
 import com.iweb.sp.pojo.OrderItem;
-import com.iweb.sp.pojo.UserInfo;
 import com.iweb.sp.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.lang.ref.PhantomReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,10 +20,10 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    @Resource
+    @Autowired
     private OrderFormDao orderFormDao;
 
-    @Resource
+    @Autowired
     private OrderItemDao orderItemDao;
 
 
@@ -35,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderForm> selectBySeller(Integer sellerId) {
         LambdaQueryWrapper<OrderForm> lwq = new LambdaQueryWrapper<>();
         lwq.eq(OrderForm::getSellerId,sellerId);
-        List<OrderForm> orderForms = orderFormDao.selectList(lwq);
+         List<OrderForm> orderForms = orderFormDao.selectList(lwq);
         return orderForms;
 
     }

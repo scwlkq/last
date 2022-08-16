@@ -3,12 +3,10 @@ package com.iweb.sp.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.iweb.sp.dao.CartDao;
 import com.iweb.sp.pojo.Cart;
-import com.iweb.sp.service.AdminService;
 import com.iweb.sp.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -18,7 +16,7 @@ import java.util.List;
 
 @Service
 public class CartServiceImpl implements CartService {
-    @Resource
+    @Autowired
     private CartDao cartDao;
 
 

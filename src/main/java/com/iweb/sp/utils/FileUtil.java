@@ -30,7 +30,7 @@ public class FileUtil {
     }
 
     public static boolean useOss(String name, MultipartFile file) {
-        boolean flag;
+        boolean flag  ;
         try {
             File loadFile = FileUtil.multipartFileToFile(file);
             File newNameFile = FileUtil.renameFile(name, loadFile);

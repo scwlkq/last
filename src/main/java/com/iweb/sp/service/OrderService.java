@@ -34,7 +34,7 @@ public interface OrderService {
      * @param orderId 订单id
      * @return
      */
-    List<OrderItem> selectDetailByUser(Integer userId, Integer orderId);
+    List<OrderItem> selectDetailByUser(Integer userId,Integer orderId);
 
     /**
      * 商家从后台看订单详情
@@ -42,6 +42,6 @@ public interface OrderService {
      * @param orderId   订单id
      * @return
      */
-    List<OrderItem> selectDetailBySeller(Integer sellerId, Integer orderId);
+    List<OrderItem> selectDetailBySeller(Integer sellerId,Integer orderId);
 
 }

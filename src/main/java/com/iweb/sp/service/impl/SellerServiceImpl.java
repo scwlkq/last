@@ -1,16 +1,23 @@
 package com.iweb.sp.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.iweb.sp.dao.*;
-import com.iweb.sp.pojo.*;
+import com.iweb.sp.dao.SellerInfoDao;
+import com.iweb.sp.dao.SkuCategoryDao;
+import com.iweb.sp.dao.SkuCategoryItemDao;
+import com.iweb.sp.dao.SkuDao;
+import com.iweb.sp.pojo.SellerInfo;
+import com.iweb.sp.pojo.Sku;
+import com.iweb.sp.pojo.SkuCategory;
+import com.iweb.sp.pojo.SkuCategoryItem;
+import com.iweb.sp.pojo.vo.SkuAndCategory;
 import com.iweb.sp.service.SellerService;
+import com.iweb.sp.utils.FileUtil;
 import com.iweb.sp.utils.SendMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author Lukecheng
@@ -20,17 +27,17 @@ import java.util.Random;
 @Service
 public class SellerServiceImpl implements SellerService {
 
-    @Resource
+    @Autowired
     private SellerInfoDao sellerInfoDao;
 
-    @Resource
+    @Autowired
     private SkuDao skuDao;
 
 
-    @Resource
+    @Autowired
     private SkuCategoryDao skuCategoryDao;
 
-    @Resource
+    @Autowired
     private SkuCategoryItemDao skuCategoryItemDao;
 
     /**
@@ -39,9 +46,24 @@ public class SellerServiceImpl implements SellerService {
      * @return boolean 判断是否注册成功
      */
     @Override
-    public boolean register(SellerInfo sellerInfo) {
+    public boolean register(SellerInfo sellerInfo, MultipartFile multipartFile) {
+
+        LambdaQueryWrapper<SellerInfo> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(SellerInfo::getPhone,sellerInfo.getPhone()).eq(SellerInfo::getPassword,sellerInfo.getPassword());
+        SellerInfo seller = sellerInfoDao.selectOne(lqw);
+        if(seller!=null){
+            //已经注册过
+            return false;
+        }
+
         int count = sellerInfoDao.insert(sellerInfo);
-        return (count==1)?true:false;
+        if(count!=1){
+            return false;
+        }
+        int id = sellerInfo.getSellerId();
+        String name = "SellerInfo" + id;
+        boolean b = FileUtil.useOss(name, multipartFile);
+        return b ;
     }
 
     @Override
@@ -100,17 +122,16 @@ public class SellerServiceImpl implements SellerService {
         skuCategoryDao.insert(skuCategory);
     }
 
+
+
     /**
-     * 商家查看商品
-     * @param sellerId
-     * @return
+     *商家从后台根据名称查看商品(模糊查询)
+     * @param skuName 商品名称
+     * @return 商品集合
      */
     @Override
-    public List<Sku> selectSkuBySeller(Integer sellerId) {
-        LambdaQueryWrapper<Sku> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Sku::getSellerId,sellerId);
-        List<Sku> skus = skuDao.selectList(lqw);
-        return skus;
+    public List<SkuAndCategory> selectSkuBySeller(String skuName) {
+        return null;
     }
 
     /**
@@ -125,8 +146,117 @@ public class SellerServiceImpl implements SellerService {
         skuDao.delete(lwq);
     }
 
-    @Override
-    public void updateSkuBySeller(Sku sku, SkuCategory skuCategory) {
 
+    /**商家更改商品信息
+     * @param sku 商品对象
+     * @param skuCategory 商品分类对象
+     * @param skucategoryId 修改之前的商品分类id
+     */
+    @Override
+    public void updateSkuBySeller(Sku sku, SkuCategory skuCategory,String skucategoryId) {
+        //更改商品信息
+        skuDao.update(sku,null);
+        LambdaQueryWrapper<SkuCategoryItem> lqw = new LambdaQueryWrapper<>();
+        //根据商品id和分类id更改商品详细表信息
+        lqw.eq(SkuCategoryItem::getSkuCategoryId,skucategoryId).eq(SkuCategoryItem::getSkuId,sku.getSkuId());
+        SkuCategoryItem skuCategoryItem = skuCategoryItemDao.selectOne(lqw);
+        skuCategoryItem.setSkuCategoryId(skuCategory.getSkuCategoryId());
+        skuCategoryItem.setUpdateTime(sku.getUpdateTime());
+        //更新分类详情表信息
+        skuCategoryItemDao.update(skuCategoryItem,null);
     }
+
+    /**
+     * 商家点开全部商品，展示全部商品
+     * @return 商品的分类的信息集合
+     */
+    @Override
+    public List<SkuAndCategory> selectAllSku(Integer sellerId,Integer pageNum) {
+        //根据用户id查询商品信息
+        LambdaQueryWrapper<Sku> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Sku::getSellerId,sellerId);
+        List<Sku> skus = skuDao.selectList(lqw);
+
+        ArrayList<SkuAndCategory> showSkus = new ArrayList<>();;
+
+        for (Sku sku : skus) {
+            LambdaQueryWrapper<SkuCategoryItem> lqw2 = new LambdaQueryWrapper<>();
+            //根据商品id查询商品分类详情表，找到对应的商品分类id
+            lqw2.eq(SkuCategoryItem::getSkuId,sku.getSkuId());
+            //同一个商品可能有多个分类
+            List<SkuCategoryItem> skuCategoryItems = skuCategoryItemDao.selectList(lqw2);
+            System.out.println(skuCategoryItems);
+
+            for (SkuCategoryItem skuCategoryItem : skuCategoryItems) {
+                //根据商品分类id去查商品分类表查询分类名
+                LambdaQueryWrapper<SkuCategory> lqw3 = new LambdaQueryWrapper<>();
+                lqw3.eq(SkuCategory::getSkuCategoryId,skuCategoryItem.getSkuCategoryId());
+                SkuCategory skuCategory = skuCategoryDao.selectOne(lqw3);
+                SkuAndCategory skuAndCategory = new SkuAndCategory();
+                skuAndCategory.setSkuCategoryName(skuCategory.getSkuCategoryName());
+                skuAndCategory.setSkuName(sku.getSkuName());
+                skuAndCategory.setSkuDetail(sku.getSkuDetail());
+                skuAndCategory.setSkuPrice(sku.getSkuPrice());
+                skuAndCategory.setSkuStock(sku.getSkuStock());
+                skuAndCategory.setSkuStatus(sku.getSkuStatus());
+                showSkus.add(skuAndCategory);
+            }
+        }
+        return selectAllSkuPage(pageNum,showSkus);
+    }
+
+
+    /**根据价格升序
+     * @param sellerId 商家id
+     * @param pageNum  页码
+     * @return
+     */
+    @Override
+    public List<SkuAndCategory> selectAllSkuASC(Integer sellerId ,Integer pageNum) {
+        List<SkuAndCategory> skuAndCategories = selectAllSku(sellerId,pageNum);
+        Collections.sort(skuAndCategories, new Comparator<SkuAndCategory>() {
+            @Override
+            public int compare(SkuAndCategory o1, SkuAndCategory o2) {
+                return Double.compare(o1.getSkuPrice(),o2.getSkuPrice());
+            }
+        });
+        return selectAllSkuPage(pageNum,skuAndCategories);
+    }
+
+
+    /**
+     * 根据价格降序
+     * @param sellerId 商家id
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public List<SkuAndCategory> selectAllSkuDESC(Integer sellerId ,Integer pageNum) {
+        List<SkuAndCategory> skuAndCategories = selectAllSku(sellerId,pageNum);
+        Collections.sort(skuAndCategories, new Comparator<SkuAndCategory>() {
+            @Override
+            public int compare(SkuAndCategory o1, SkuAndCategory o2) {
+                return Double.compare(o2.getSkuPrice(),o1.getSkuPrice());
+            }
+        });
+        //调用分页
+        return selectAllSkuPage(pageNum,skuAndCategories);
+    }
+
+
+    /**
+     *
+     * @param pageNum 页码
+     * @param skuAndCategories
+     * @return 返回当前也得数据，一页6条数据
+     */
+    @Override
+    public List<SkuAndCategory> selectAllSkuPage(Integer pageNum,List<SkuAndCategory> skuAndCategories) {
+        List<SkuAndCategory> skuAndCategoriesDataPage = new ArrayList<>();
+        for(int i =(pageNum-1)*3;i<pageNum*3 && i<skuAndCategories.size();i++){
+            skuAndCategoriesDataPage.add(skuAndCategories.get(i));
+        }
+        return skuAndCategoriesDataPage;
+    }
+
 }

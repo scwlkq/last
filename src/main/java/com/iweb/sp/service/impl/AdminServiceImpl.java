@@ -2,13 +2,11 @@ package com.iweb.sp.service.impl;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iweb.sp.dao.AdminInfoDao;
 import com.iweb.sp.dao.SellerInfoDao;
 import com.iweb.sp.pojo.AdminInfo;
 import com.iweb.sp.pojo.SellerInfo;
 import com.iweb.sp.service.AdminService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,6 +26,7 @@ public class AdminServiceImpl implements AdminService {
     @Resource
     private SellerInfoDao sellerInfoDao;
 
+
     @Override
     public AdminInfo login(String jobNumber, String password) {
         //密码加密
@@ -38,10 +37,6 @@ public class AdminServiceImpl implements AdminService {
         return adminInfo;
     }
 
-    @Override
-    public void logout() {
-
-    }
 
     /**
      *
@@ -50,24 +45,66 @@ public class AdminServiceImpl implements AdminService {
      */
     @Override
     public boolean register(AdminInfo adminInfo) {
+        //先查数据库
+        LambdaQueryWrapper<AdminInfo> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(AdminInfo::getJobNumber,adminInfo.getJobNumber());
+        AdminInfo admin = adminInfoDao.selectOne(lqw);
+        if (admin!=null){   //用户已存在
+            return false;
+        }
         //MD5加密
         String password = DigestUtil.md5Hex(adminInfo.getPassword());
         adminInfo.setPassword(password);
         int count = adminInfoDao.insert(adminInfo);
+
         return (count==1)? true:false;
     }
 
 
     /**
      * 下架商家，更改商家的状态码
-     * @param sellerId 商家id
+     * @param sellerInfo 商家id
      */
     @Override
-    public void shopClose(Integer sellerId) {
-        //根据id查询商家数据
-        SellerInfo sellerInfo = sellerInfoDao.selectById(sellerId);
-        sellerInfo.setSellerStatus("打烊");
+    public void updateSellerStatusclose(SellerInfo sellerInfo) {
+        sellerInfo.setSellerStatus("下架");
         //更新数据
-        sellerInfoDao.updateById(sellerInfo);
+        sellerInfoDao.update(sellerInfo,null);
     }
+
+    /**
+     * 查看未审核的商家
+     * @return
+     */
+    @Override
+    public List<SellerInfo> selectSellerApplyByAdmin() {
+        LambdaQueryWrapper<SellerInfo> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(SellerInfo::getSellerStatus,"未审核");
+        List<SellerInfo> sellerInfos = sellerInfoDao.selectList(lqw);
+        return sellerInfos;
+    }
+
+
+    /**
+     * 更改商家状态为正常
+     * @param sellerInfo 需要通过申请的商家对象
+     */
+    @Override
+    public void updateSellerStatusTrue(SellerInfo sellerInfo) {
+        sellerInfo.setSellerStatus("正常");
+        sellerInfoDao.update(sellerInfo,null);
+    }
+
+
+    /**
+     * 更改商家状态为未审核
+     * @param sellerInfo 需要通过申请的商家对象
+     */
+    @Override
+    public void updateSellerStatusFalse(SellerInfo sellerInfo) {
+        sellerInfo.setSellerStatus("未审核");
+        sellerInfoDao.update(sellerInfo,null);
+    }
+
+
 }

@@ -27,6 +27,9 @@ public interface UserService {
      */
     UserInfo loginByPassword(String phone, String password);
 
+
+    public UserInfo loginByCode(String phone,String code);
+
     /**
      * 短信验证码登录
      * @return 最后实现

@@ -1,7 +1,7 @@
 package com.iweb.sp.service;
 
 import com.iweb.sp.pojo.AdminInfo;
-import org.springframework.stereotype.Service;
+import com.iweb.sp.pojo.SellerInfo;
 
 import java.util.List;
 
@@ -21,10 +21,7 @@ public interface AdminService {
      */
     AdminInfo login(String jobNumber, String password);
 
-    /**
-     * 登出
-     */
-    void logout();
+
 
     /**
      * 管理员注册
@@ -34,9 +31,25 @@ public interface AdminService {
     boolean register(AdminInfo adminInfo);
 
     /**下架商家
-     * @param sellerId 商家id
+     * @param sellerInfo 商家id
      */
-    void shopClose(Integer sellerId);
+    void updateSellerStatusclose(SellerInfo sellerInfo);
+
+    /**管理员查看申请的商家
+     * @return 申请商家的集合
+     */
+    List<SellerInfo> selectSellerApplyByAdmin();
+
+     /**更改商家状态为正常
+     * @param sellerInfo 需要通过申请的商家对象
+     */
+    void updateSellerStatusTrue(SellerInfo sellerInfo);
+
+    /**更改商家状态为为审核
+     * @param sellerInfo 需要通过申请的商家对象
+     */
+    void updateSellerStatusFalse(SellerInfo sellerInfo);
+
 
 
 }

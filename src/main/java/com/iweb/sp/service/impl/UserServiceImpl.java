@@ -10,7 +10,6 @@ import com.iweb.sp.utils.SendMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Random;
 
 /**
@@ -21,14 +20,23 @@ import java.util.Random;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Resource
+    //验证码
+    private String usercode;
+
+    @Autowired
     private UserInfoDao userInfoDao;
-    @Resource
+    @Autowired
     private CartDao cartDao;
 
 
     @Override
     public boolean register(UserInfo userInfo) {
+        LambdaQueryWrapper<UserInfo> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(UserInfo::getPhone,userInfo.getPhone());
+        UserInfo user = userInfoDao.selectOne(lqw);
+        if(user!=null){   //用户已存在
+            return false;
+        }
         int count = userInfoDao.insert(userInfo);
         return (count==1)?true:false;
     }
@@ -39,6 +47,17 @@ public class UserServiceImpl implements UserService {
         lwq.eq(UserInfo::getPhone,phone).eq(UserInfo::getPassword,password);
         UserInfo userInfo = userInfoDao.selectOne(lwq);
         return userInfo;
+    }
+
+
+    public UserInfo loginByCode(String phone,String code){
+        LambdaQueryWrapper<UserInfo> lwq = new LambdaQueryWrapper<>();
+        lwq.eq(UserInfo::getPhone,phone);
+        UserInfo user = userInfoDao.selectOne(lwq);
+        if(user!=null && code == usercode){
+            return user;
+        }else
+            return null;
     }
 
 
@@ -57,13 +76,14 @@ public class UserServiceImpl implements UserService {
             int num = new Random().nextInt(10);
             code.append(utilcode.charAt(num));
         }
-        String usercode = code.toString();
+        String newcode = code.toString();
         try {
             SendMessage.SendMessageByali(phone,usercode);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return usercode;
+        usercode = newcode;
+        return newcode;
     }
 
 
