@@ -21,7 +21,7 @@ public interface SellerService {
      * @param sellerInfo 商家视图对象
      * @return 注册结果布尔值
      */
-    boolean register(SellerInfo sellerInfo, MultipartFile multipartFile);
+    boolean register(SellerInfo sellerInfo, MultipartFile multipartFile,String cateName);
 
     /**
      * 商家登录

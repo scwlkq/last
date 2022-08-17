@@ -1,24 +1,54 @@
 package com.iweb.sp.controller;
 
 import com.iweb.sp.pojo.SellerInfo;
-import com.iweb.sp.pojo.Sku;
-import com.iweb.sp.pojo.SkuCategory;
+import com.iweb.sp.pojo.vo.SellerRegisterVO;
 import com.iweb.sp.service.SellerService;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 /**
  * @author SUN
  * @date 2022/8/16 9:55
  * @description 类的描述和介绍
  */
-@CrossOrigin
+
+@Api(tags = "商家接口")
 @RestController
 public class SellerController {
     @Resource
     SellerService sellerService;
+
+
+    //商家注册
+    @RequestMapping("/test/register")
+    @ResponseBody
+    public Boolean register(SellerRegisterVO sellerRegisterVO, @RequestParam("file") MultipartFile file) throws IOException {
+        SellerInfo sellerInfo = new SellerInfo();
+        sellerInfo.setAvatarImage("null");
+        sellerInfo.setNickName(sellerRegisterVO.getStorename());
+        sellerInfo.setPhone(sellerRegisterVO.getNumber());
+        sellerInfo.setPassword(sellerRegisterVO.getPassword());
+        sellerInfo.setProvince(sellerRegisterVO.getProvince());
+        sellerInfo.setCity(sellerRegisterVO.getCity());
+        sellerInfo.setCounty(sellerRegisterVO.getArea());
+        sellerInfo.setLastDetail(sellerRegisterVO.getDetailaddress());
+        sellerInfo.setLinkMan(sellerRegisterVO.getConnectpeople());
+        sellerInfo.setGender(sellerRegisterVO.getSex());
+        sellerInfo.setSellerIntroduction("测试");
+        sellerInfo.setSellerStatus("未审核");
+        sellerInfo.setAdminId(-1);
+        sellerInfo.setCreateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
+        sellerInfo.setUpdateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
+        sellerInfo.setSellerAllprice(0.0);
+        sellerInfo.setSellerAll(0);
+        return sellerService.register(sellerInfo,file,sellerRegisterVO.getCategory());
+    }
+
 
     //商家注册
 //    @PostMapping("")
@@ -29,11 +59,11 @@ public class SellerController {
 
     //商家密码登录
     //传入参数 商家登录电话 密码
-    @GetMapping("/test/staff_confrim")
-    public SellerInfo loginByPassword(String phone,String password){
-        SellerInfo sellerInfo=sellerService.loginByPassword(phone,password);
-        return sellerInfo;
-    }
+//    @GetMapping("/test/staff_confrim1")
+//    public SellerInfo loginByPassword(String phone,String password){
+//        SellerInfo sellerInfo=sellerService.loginByPassword(phone,password);
+//        return sellerInfo;
+//    }
 
     //短信登录
     //传入手机号

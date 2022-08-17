@@ -7,6 +7,7 @@ import com.iweb.sp.service.SkuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 
@@ -18,7 +19,7 @@ import java.util.List;
 
 @Service
 public class SkuServiceImpl implements SkuService {
-    @Autowired
+    @Resource
     private SkuDao skuDao;
 
     @Override

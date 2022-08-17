@@ -10,6 +10,7 @@ import com.iweb.sp.utils.SendMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Random;
 
 /**
@@ -23,9 +24,9 @@ public class UserServiceImpl implements UserService {
     //验证码
     private String usercode;
 
-    @Autowired
+    @Resource
     private UserInfoDao userInfoDao;
-    @Autowired
+    @Resource
     private CartDao cartDao;
 
 
@@ -50,14 +51,16 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public UserInfo loginByCode(String phone,String code){
+    @Override
+    public UserInfo loginByCode(String phone, String code){
         LambdaQueryWrapper<UserInfo> lwq = new LambdaQueryWrapper<>();
         lwq.eq(UserInfo::getPhone,phone);
         UserInfo user = userInfoDao.selectOne(lwq);
         if(user!=null && code == usercode){
             return user;
-        }else
+        }else {
             return null;
+        }
     }
 
 

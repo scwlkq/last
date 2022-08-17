@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -27,17 +29,17 @@ import java.util.*;
 @Service
 public class SellerServiceImpl implements SellerService {
 
-    @Autowired
+    @Resource
     private SellerInfoDao sellerInfoDao;
 
-    @Autowired
+    @Resource
     private SkuDao skuDao;
 
 
-    @Autowired
+    @Resource
     private SkuCategoryDao skuCategoryDao;
 
-    @Autowired
+    @Resource
     private SkuCategoryItemDao skuCategoryItemDao;
 
     /**
@@ -46,7 +48,7 @@ public class SellerServiceImpl implements SellerService {
      * @return boolean 判断是否注册成功
      */
     @Override
-    public boolean register(SellerInfo sellerInfo, MultipartFile multipartFile) {
+    public boolean register(SellerInfo sellerInfo, MultipartFile multipartFile,String cateName) {
 
         LambdaQueryWrapper<SellerInfo> lqw = new LambdaQueryWrapper<>();
         lqw.eq(SellerInfo::getPhone,sellerInfo.getPhone()).eq(SellerInfo::getPassword,sellerInfo.getPassword());
@@ -55,13 +57,29 @@ public class SellerServiceImpl implements SellerService {
             //已经注册过
             return false;
         }
-
         int count = sellerInfoDao.insert(sellerInfo);
         if(count!=1){
             return false;
         }
-        int id = sellerInfo.getSellerId();
+
+        LambdaQueryWrapper<SellerInfo> lqw2 = new LambdaQueryWrapper<>();
+        lqw2.eq(SellerInfo::getPhone,seller.getPhone());
+        SellerInfo sellerInfo1 = sellerInfoDao.selectOne(lqw2);
+
+        int id = sellerInfo1.getSellerId();
         String name = "SellerInfo" + id;
+        sellerInfo.setAvatarImage(name);
+        sellerInfoDao.update(sellerInfo,null);
+
+
+        //添加商品分类
+        SkuCategory skuCategory  = new SkuCategory();
+        skuCategory.setSkuCategoryName(cateName);
+        skuCategory.setSellerId(id);
+        skuCategory.setCreateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
+        skuCategory.setUpdateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
+        skuCategoryDao.insert(skuCategory);
+
         boolean b = FileUtil.useOss(name, multipartFile);
         return b ;
     }
