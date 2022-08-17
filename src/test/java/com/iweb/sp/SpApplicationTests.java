@@ -128,11 +128,11 @@ public class SpApplicationTests {
         System.out.println(skuAndCategories);
     }
 
-
-    @Test
-    public void UserServiceTest5(){
-        System.out.println(userService.searchByLike(1, "我要吃棒棒糖", 20));
-    }
+//
+//    @Test
+//    public void UserServiceTest5(){
+//        System.out.println(userService.searchByLike(1, "我要吃棒棒糖", 20));
+//    }
 
 
 }

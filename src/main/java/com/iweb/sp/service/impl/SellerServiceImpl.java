@@ -76,7 +76,6 @@ public class SellerServiceImpl implements SellerService {
             sellerInfo.setAvatarImage(name);
             sellerInfoDao.update(sellerInfo,null);
 
-
             //添加商品分类
             SkuCategory skuCategory  = new SkuCategory();
             skuCategory.setSkuCategoryName(cateName);
@@ -90,16 +89,6 @@ public class SellerServiceImpl implements SellerService {
         }else {
             return false;
         }
-
-
-
-
-
-
-
-
-
-
 
     }
 
