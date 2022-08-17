@@ -21,7 +21,7 @@ public interface SellerService {
      * @param sellerInfo 商家视图对象
      * @return 注册结果布尔值
      */
-    boolean register(SellerInfo sellerInfo, MultipartFile multipartFile);
+    boolean register(SellerInfo sellerInfo, MultipartFile multipartFile,String cateName,String code);
 
     /**
      * 商家登录
@@ -35,7 +35,7 @@ public interface SellerService {
      * 短信登录
      * @return 商家对象 登录失败为空
      */
-    String loginByMessage(String phone);
+    String loginByMessage(SellerInfo sellerInfo);
 
     /**商家增加商品
      * @param sku 商品对象
@@ -55,7 +55,7 @@ public interface SellerService {
      * @param skuName 商品名称
      * @return 商品集合
      */
-    List<SkuAndCategory>selectSkuBySeller(String skuName);
+//    List<SkuAndCategory>selectSkuBySeller(String skuName);
 
     /**商家删除指定商品
      * @param skuId 商品id

@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Lukecheng
@@ -27,12 +29,14 @@ import java.util.*;
 @Service
 public class SellerServiceImpl implements SellerService {
 
+    //验证码
+    private String phonemesscode;
+
     @Autowired
     private SellerInfoDao sellerInfoDao;
 
     @Autowired
     private SkuDao skuDao;
-
 
     @Autowired
     private SkuCategoryDao skuCategoryDao;
@@ -46,24 +50,57 @@ public class SellerServiceImpl implements SellerService {
      * @return boolean 判断是否注册成功
      */
     @Override
-    public boolean register(SellerInfo sellerInfo, MultipartFile multipartFile) {
+    public boolean register(SellerInfo sellerInfo, MultipartFile multipartFile,String cateName,String code) {
+        //验证验证码
+        if(phonemesscode == code){
+            LambdaQueryWrapper<SellerInfo> lqw = new LambdaQueryWrapper<>();
+            lqw.eq(SellerInfo::getPhone,sellerInfo.getPhone()).eq(SellerInfo::getPassword,sellerInfo.getPassword());
+            SellerInfo seller = sellerInfoDao.selectOne(lqw);
+            if(seller!=null){
+                //已经注册过
+                return false;
+            }
+            String coordinate = sellerInfo.getProvince()+sellerInfo.getCity()+sellerInfo.getCounty();
+            sellerInfo.setCoordinate(coordinate);
+            int count = sellerInfoDao.insert(sellerInfo);
+            if(count!=1){
+                return false;
+            }
 
-        LambdaQueryWrapper<SellerInfo> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(SellerInfo::getPhone,sellerInfo.getPhone()).eq(SellerInfo::getPassword,sellerInfo.getPassword());
-        SellerInfo seller = sellerInfoDao.selectOne(lqw);
-        if(seller!=null){
-            //已经注册过
+            LambdaQueryWrapper<SellerInfo> lqw2 = new LambdaQueryWrapper<>();
+            lqw2.eq(SellerInfo::getPhone,seller.getPhone());
+            SellerInfo sellerInfo1 = sellerInfoDao.selectOne(lqw2);
+
+            int id = sellerInfo1.getSellerId();
+            String name = "SellerInfo" + id;
+            sellerInfo.setAvatarImage(name);
+            sellerInfoDao.update(sellerInfo,null);
+
+
+            //添加商品分类
+            SkuCategory skuCategory  = new SkuCategory();
+            skuCategory.setSkuCategoryName(cateName);
+            skuCategory.setSellerId(id);
+            skuCategory.setCreateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
+            skuCategory.setUpdateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
+            skuCategoryDao.insert(skuCategory);
+
+            boolean b = FileUtil.useOss(name, multipartFile);
+            return b ;
+        }else {
             return false;
         }
 
-        int count = sellerInfoDao.insert(sellerInfo);
-        if(count!=1){
-            return false;
-        }
-        int id = sellerInfo.getSellerId();
-        String name = "SellerInfo" + id;
-        boolean b = FileUtil.useOss(name, multipartFile);
-        return b ;
+
+
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -75,7 +112,7 @@ public class SellerServiceImpl implements SellerService {
     }
 
     @Override
-    public String loginByMessage(String phone) {
+    public String loginByMessage(SellerInfo sellerInfo) {
         //生成四位数验证码
         String utilcode = "0123456789";
         StringBuilder code  = new StringBuilder();
@@ -86,10 +123,11 @@ public class SellerServiceImpl implements SellerService {
         }
         String usercode = code.toString();
         try {
-            SendMessage.SendMessageByali(phone,usercode);
+            SendMessage.SendMessageByali(sellerInfo.getPhone(),usercode);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        phonemesscode = usercode;
         return usercode;
     }
 
@@ -124,15 +162,7 @@ public class SellerServiceImpl implements SellerService {
 
 
 
-    /**
-     *商家从后台根据名称查看商品(模糊查询)
-     * @param skuName 商品名称
-     * @return 商品集合
-     */
-    @Override
-    public List<SkuAndCategory> selectSkuBySeller(String skuName) {
-        return null;
-    }
+
 
     /**
      * 商家删除指定商品
@@ -253,10 +283,13 @@ public class SellerServiceImpl implements SellerService {
     @Override
     public List<SkuAndCategory> selectAllSkuPage(Integer pageNum,List<SkuAndCategory> skuAndCategories) {
         List<SkuAndCategory> skuAndCategoriesDataPage = new ArrayList<>();
-        for(int i =(pageNum-1)*3;i<pageNum*3 && i<skuAndCategories.size();i++){
+        for(int i =(pageNum-1)*6;i<pageNum*6 && i<skuAndCategories.size();i++){
             skuAndCategoriesDataPage.add(skuAndCategories.get(i));
         }
         return skuAndCategoriesDataPage;
     }
+
+
+
 
 }

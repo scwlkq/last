@@ -2,15 +2,23 @@ package com.iweb.sp.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.iweb.sp.dao.CartDao;
+
+import com.iweb.sp.dao.SkuDao;
 import com.iweb.sp.dao.UserInfoDao;
 import com.iweb.sp.pojo.Cart;
+import com.iweb.sp.pojo.Sku;
+
 import com.iweb.sp.pojo.UserInfo;
 import com.iweb.sp.service.UserService;
 import com.iweb.sp.utils.SendMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Lukecheng
@@ -27,6 +35,9 @@ public class UserServiceImpl implements UserService {
     private UserInfoDao userInfoDao;
     @Autowired
     private CartDao cartDao;
+
+    @Resource
+    private SkuDao skuDao;
 
 
     @Override
@@ -87,8 +98,60 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    /**
+     * 更新购物车
+     * @param cart 购物车对象
+     */
     @Override
     public void UpdateCart(Cart cart) {
         cartDao.update(cart,null);
     }
+
+
+    /**
+     * 反向模糊查询
+     * @param sellerId 商家id
+     * @param name
+     * @param allCount
+     * @return
+     */
+//    @Override
+//    public ConcurrentHashMap searchByLike(int sellerId, String name, int allCount) {
+//        ConcurrentHashMap hashMap = new ConcurrentHashMap();
+//
+//
+//                while (true){
+//                    String key = getAllSubstring(name);
+//                //模糊查询
+//                LambdaQueryWrapper<Sku> lwq = new LambdaQueryWrapper<>();
+//                lwq.eq(Sku::getSellerId,sellerId).like(Sku::getSkuName,key);
+//                List<Sku> skus = skuDao.selectList(lwq);   //模糊匹配到的结果
+//                for (Sku sku : skus) {
+//                    //首先判断allCount有没有满
+//                     if(hashMap.size()<=allCount){
+//                        //将数据添加到hashMap集合中
+//                        hashMap.put(sku.getSkuId(),sku);
+//                         System.out.println(hashMap);
+//                    }else{
+//                         return hashMap;
+//                     }
+//                }
+//            }
+//        }
+//        return hashMap;
+//    }
+
+//    @Override
+//    public List<String> getAllSubstring(String str) {
+//        List<String> stringskey = new ArrayList<>();
+//        if (str.length() > 0) {
+//			for (int j = 0; j < str.length(); j++) {
+//				stringskey.add(str.substring(0, j + 1));
+//			}
+//			getAllSubstring(str.substring(1));
+//		}
+//
+//    }
+
+
 }

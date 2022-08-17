@@ -91,18 +91,18 @@ public class SpApplicationTests {
         System.out.println(orderItems);
     }
 
-    @Test
-    public void SellerServiceTest(){
-        String code = sellerService.loginByMessage("18061495569");
-
-        System.out.println(code);
-    }
-
-
-    @Test
-    public void UserServiceTest3(){
-        sellerService.loginByMessage("18061495569");
-    }
+//    @Test
+//    public void SellerServiceTest(){
+//        String code = sellerService.loginByMessage("18061495569");
+//
+//        System.out.println(code);
+//    }
+//
+//
+//    @Test
+//    public void UserServiceTest3(){
+//        sellerService.loginByMessage("18061495569");
+//    }
 
 
     @Test
@@ -127,5 +127,12 @@ public class SpApplicationTests {
         List<SkuAndCategory> skuAndCategories = sellerService.selectAllSkuASC(1,1);
         System.out.println(skuAndCategories);
     }
+
+
+    @Test
+    public void UserServiceTest5(){
+        System.out.println(userService.searchByLike(1, "我要吃棒棒糖", 20));
+    }
+
 
 }

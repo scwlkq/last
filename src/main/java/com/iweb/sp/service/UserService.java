@@ -4,6 +4,9 @@ package com.iweb.sp.service;
 import com.iweb.sp.pojo.Cart;
 import com.iweb.sp.pojo.UserInfo;
 
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author Lenovo
  * @date 2022/8/13 23:16
@@ -45,6 +48,14 @@ public interface UserService {
      */
     void UpdateCart(Cart cart);
 
+//    public ConcurrentHashMap searchByLike(int sellerId, String name, int allCount);
+
+
+    /**
+     * 打印一个字符串的所有字串用于模糊查询
+     * @param str
+     */
+//    List<String> getAllSubstring(String str);
 
 
 }
