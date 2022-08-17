@@ -20,7 +20,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 public class SellerCategory implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 商家分类ID

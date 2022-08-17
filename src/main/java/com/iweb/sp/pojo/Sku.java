@@ -20,7 +20,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 public class Sku implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
     /**
      * 商品ID

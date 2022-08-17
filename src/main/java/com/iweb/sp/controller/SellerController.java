@@ -25,29 +25,29 @@ public class SellerController {
 
 
     //商家注册
-    @RequestMapping("/test/register")
-    @ResponseBody
-    public Boolean register(SellerRegisterVO sellerRegisterVO, @RequestParam("file") MultipartFile file) throws IOException {
-        SellerInfo sellerInfo = new SellerInfo();
-        sellerInfo.setAvatarImage("null");
-        sellerInfo.setNickName(sellerRegisterVO.getStorename());
-        sellerInfo.setPhone(sellerRegisterVO.getNumber());
-        sellerInfo.setPassword(sellerRegisterVO.getPassword());
-        sellerInfo.setProvince(sellerRegisterVO.getProvince());
-        sellerInfo.setCity(sellerRegisterVO.getCity());
-        sellerInfo.setCounty(sellerRegisterVO.getArea());
-        sellerInfo.setLastDetail(sellerRegisterVO.getDetailaddress());
-        sellerInfo.setLinkMan(sellerRegisterVO.getConnectpeople());
-        sellerInfo.setGender(sellerRegisterVO.getSex());
-        sellerInfo.setSellerIntroduction("测试");
-        sellerInfo.setSellerStatus("未审核");
-        sellerInfo.setAdminId(-1);
-        sellerInfo.setCreateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
-        sellerInfo.setUpdateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
-        sellerInfo.setSellerAllprice(0.0);
-        sellerInfo.setSellerAll(0);
-        return sellerService.register(sellerInfo,file,sellerRegisterVO.getCategory(),"123");
-    }
+//    @RequestMapping("/test/register")
+//    @ResponseBody
+//    public Boolean register(SellerRegisterVO sellerRegisterVO, @RequestParam("file") MultipartFile file) throws IOException {
+////        SellerInfo sellerInfo = new SellerInfo();
+////        sellerInfo.setAvatarImage("null");
+////        sellerInfo.setNickName(sellerRegisterVO.getStorename());
+////        sellerInfo.setPhone(sellerRegisterVO.getNumber());
+////        sellerInfo.setPassword(sellerRegisterVO.getPassword());
+////        sellerInfo.setProvince(sellerRegisterVO.getProvince());
+////        sellerInfo.setCity(sellerRegisterVO.getCity());
+////        sellerInfo.setCounty(sellerRegisterVO.getArea());
+////        sellerInfo.setLastDetail(sellerRegisterVO.getDetailaddress());
+////        sellerInfo.setLinkMan(sellerRegisterVO.getConnectpeople());
+////        sellerInfo.setGender(sellerRegisterVO.getSex());
+////        sellerInfo.setSellerIntroduction("测试");
+////        sellerInfo.setSellerStatus("未审核");
+////        sellerInfo.setAdminId(-1);
+////        sellerInfo.setCreateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
+////        sellerInfo.setUpdateTime(new SimpleDateFormat().format(System.currentTimeMillis()));
+////        sellerInfo.setSellerAllprice(0.0);
+////        sellerInfo.setSellerAll(0);
+////        return sellerService.register(sellerInfo,file,sellerRegisterVO.getCategory(),"123");
+//    }
 
 
     //商家注册

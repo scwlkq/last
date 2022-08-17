@@ -40,15 +40,18 @@ public interface AdminService {
      */
     List<SellerInfo> selectSellerApplyByAdmin();
 
-     /**更改商家状态为正常
-     * @param sellerInfo 需要通过申请的商家对象
+    /**
+     * @param sellerId
+     * @param adminId
      */
-    void updateSellerStatusTrue(SellerInfo sellerInfo);
+    void updateSellerStatusTrue(Integer sellerId,Integer adminId);
 
-    /**更改商家状态为为审核
-     * @param sellerInfo 需要通过申请的商家对象
+    /**
+     *
+     * @param sellerId
+     * @param adminId
      */
-    void updateSellerStatusFalse(SellerInfo sellerInfo);
+    void updateSellerStatusFalse(Integer sellerId,Integer adminId);
 
 
 

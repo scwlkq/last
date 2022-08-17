@@ -2,6 +2,7 @@ package com.iweb.sp;
 
 import com.iweb.sp.pojo.AdminInfo;
 import com.iweb.sp.pojo.OrderItem;
+import com.iweb.sp.pojo.SellerInfo;
 import com.iweb.sp.pojo.UserInfo;
 import com.iweb.sp.pojo.vo.SkuAndCategory;
 import com.iweb.sp.service.impl.AdminServiceImpl;
@@ -128,11 +129,14 @@ public class SpApplicationTests {
         System.out.println(skuAndCategories);
     }
 
-//
-//    @Test
-//    public void UserServiceTest5(){
-//        System.out.println(userService.searchByLike(1, "我要吃棒棒糖", 20));
-//    }
+
+
+    @Test
+    public void UserServiceTest5(){
+        System.out.println(userService.searchByLike(1, "我要吃肉", 20));
+    }
+
+
 
 
 }

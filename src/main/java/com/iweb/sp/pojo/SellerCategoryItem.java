@@ -19,7 +19,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 public class SellerCategoryItem implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
     /**
      * 商家分类详情ID

@@ -115,43 +115,35 @@ public class UserServiceImpl implements UserService {
      * @param allCount
      * @return
      */
-//    @Override
-//    public ConcurrentHashMap searchByLike(int sellerId, String name, int allCount) {
-//        ConcurrentHashMap hashMap = new ConcurrentHashMap();
-//
-//
-//                while (true){
-//                    String key = getAllSubstring(name);
-//                //模糊查询
-//                LambdaQueryWrapper<Sku> lwq = new LambdaQueryWrapper<>();
-//                lwq.eq(Sku::getSellerId,sellerId).like(Sku::getSkuName,key);
-//                List<Sku> skus = skuDao.selectList(lwq);   //模糊匹配到的结果
-//                for (Sku sku : skus) {
-//                    //首先判断allCount有没有满
-//                     if(hashMap.size()<=allCount){
-//                        //将数据添加到hashMap集合中
-//                        hashMap.put(sku.getSkuId(),sku);
-//                         System.out.println(hashMap);
-//                    }else{
-//                         return hashMap;
-//                     }
-//                }
-//            }
-//        }
-//        return hashMap;
-//    }
 
-//    @Override
-//    public List<String> getAllSubstring(String str) {
-//        List<String> stringskey = new ArrayList<>();
-//        if (str.length() > 0) {
-//			for (int j = 0; j < str.length(); j++) {
-//				stringskey.add(str.substring(0, j + 1));
-//			}
-//			getAllSubstring(str.substring(1));
-//		}
-//
-//    }
+    @Override
+    public ConcurrentHashMap searchByLike(int sellerId, String name, int allCount) {
+        ConcurrentHashMap hashMap = new ConcurrentHashMap();
+        char[] allSubstring = getAllSubstring(name);
+        for (char s : allSubstring) {
+            char key = s;
+            LambdaQueryWrapper<Sku> lwq = new LambdaQueryWrapper<>();
+            lwq.eq(Sku::getSellerId,sellerId).like(Sku::getSkuName,key);
+            List<Sku> skus = skuDao.selectList(lwq);   //模糊匹配到的结果
+            for (Sku sku : skus) {
+                //首先判断allCount有没有满
+                if(hashMap.size()<=allCount){
+                    //将数据添加到hashMap集合中
+                    hashMap.put(sku.getSkuId(),sku);
+                }else{
+                    return hashMap;
+                }
+            }
+        }
+        return hashMap;
+    }
+
+    @Override
+    public char[] getAllSubstring(String str) {
+        List<String> stringskey = new ArrayList<>();
+        char[] stringskeyChar = str.toCharArray();
+        return stringskeyChar;
+    }
 
 
 }

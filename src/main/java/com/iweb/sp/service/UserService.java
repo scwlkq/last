@@ -48,14 +48,11 @@ public interface UserService {
      */
     void UpdateCart(Cart cart);
 
-//    public ConcurrentHashMap searchByLike(int sellerId, String name, int allCount);
+    ConcurrentHashMap searchByLike(int sellerId, String name, int allCount);
 
 
-    /**
-     * 打印一个字符串的所有字串用于模糊查询
-     * @param str
-     */
-//    List<String> getAllSubstring(String str);
+
+    char[] getAllSubstring(String str);
 
 
 }

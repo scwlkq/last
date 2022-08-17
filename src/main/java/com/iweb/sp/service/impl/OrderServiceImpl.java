@@ -6,7 +6,6 @@ import com.iweb.sp.dao.OrderItemDao;
 import com.iweb.sp.pojo.OrderForm;
 import com.iweb.sp.pojo.OrderItem;
 import com.iweb.sp.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

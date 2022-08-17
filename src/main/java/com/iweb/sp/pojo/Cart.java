@@ -40,11 +40,6 @@ public class Cart implements Serializable {
     @TableField("seller_id")
     private Integer sellerId;
 
-    /**
-     * 购物车详情ID
-     */
-    @TableField("cart_item_id")
-    private Integer cartItemId;
 
     /**
      * 创建时间

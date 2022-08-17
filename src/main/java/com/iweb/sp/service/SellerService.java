@@ -9,6 +9,7 @@ import com.iweb.sp.pojo.vo.SkuAndCategory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Lenovo
@@ -21,7 +22,7 @@ public interface SellerService {
      * @param sellerInfo 商家视图对象
      * @return 注册结果布尔值
      */
-    boolean register(SellerInfo sellerInfo, MultipartFile multipartFile,String cateName,String code);
+    boolean register(SellerInfo sellerInfo, MultipartFile multipartFile,Integer cateId,String code);
 
     /**
      * 商家登录
@@ -35,14 +36,14 @@ public interface SellerService {
      * 短信登录
      * @return 商家对象 登录失败为空
      */
-    String loginByMessage(SellerInfo sellerInfo);
+    void sendMessage(String phone);
 
     /**商家增加商品
      * @param sku 商品对象
      * @param skuCategory 商品分类对象
      * 用户添加商品后，
      */
-    void insertSkuBySeller(Sku sku, SkuCategory skuCategory, SkuCategoryItem skuCategoryItem);
+    void insertSkuBySeller(Sku sku, SkuCategory skuCategory);
 
 
     /**商家增加分类
@@ -55,7 +56,7 @@ public interface SellerService {
      * @param skuName 商品名称
      * @return 商品集合
      */
-//    List<SkuAndCategory>selectSkuBySeller(String skuName);
+
 
     /**商家删除指定商品
      * @param skuId 商品id
@@ -100,6 +101,11 @@ public interface SellerService {
     List<SkuAndCategory> selectAllSkuPage(Integer pageNum,List<SkuAndCategory> skuAndCategories);
 
 
-
+     /**商家从后台根据分类查看商品
+      *
+     * @param skuCategoryName 商品分类名称
+     * @return 商品家分类的信息集合
+     */
+    List<SkuAndCategory> selectSkuByCategoryBySeller(String skuCategoryName);
 
 }
