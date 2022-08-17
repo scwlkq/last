@@ -9,7 +9,6 @@ import lombok.Data;
 @Data
 public class SellerRegisterVO {
     private String storename;
-    private String category;
     private String password;
     private String connectpeople;
     private String sex;
